@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+   <xs:simpleType name="DBDriver">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="oracle.jdbc.driver.OracleDriver" />
+         <xs:enumeration value="org.h2.Driver" />
+         <xs:enumeration value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+         <xs:enumeration value="org.postgresql.Driver" />
+         <xs:enumeration value="com.sap.db.jdbc.Driver" />
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="AggregationFunction">
+      <xs:restriction base="xs:string">
+         <xs:enumeration value="avg" />
+         <xs:enumeration value="min" />
+         <xs:enumeration value="max" />
+         <xs:enumeration value="sum" />
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:element name="Cube">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element name="SourceDBDriver" type="DBDriver" />
+            <xs:element name="SourceDBURL" type="xs:string" />
+            <xs:element name="SourceDBUser" type="xs:string" />
+            <xs:element name="SourceDBPassword" type="xs:string" />
+            <xs:element name="Measures">
+               <xs:complexType>
+                  <xs:sequence>
+                     <xs:element name="Measure" minOccurs="1" maxOccurs="unbounded">
+                        <xs:complexType>
+                           <xs:attribute name="uniqueName" type="xs:string" use="required" />
+                           <xs:attribute name="calculatedFormula" type="xs:string" use="optional" />
+                        </xs:complexType>
+                     </xs:element>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+            <xs:element name="Hierarchies">
+               <xs:complexType>
+                  <xs:sequence>
+                     <xs:element name="Hierarchy" minOccurs="1" maxOccurs="unbounded">
+                        <xs:complexType>
+                           <xs:sequence>
+                              <xs:element name="Levels">
+                                 <xs:complexType>
+                                    <xs:sequence>
+                                       <xs:element name="Level" minOccurs="1" maxOccurs="unbounded">
+                                          <xs:complexType>
+                                             <xs:attribute name="uniqueName" type="xs:string" use="required" />
+                                             <xs:attribute name="depth" type="xs:positiveInteger" use="required" />
+                                             <xs:attribute name="codeColumnSourceName" type="xs:string" use="optional" />
+                                             <xs:attribute name="codeColumnName" type="xs:string" use="required" />
+                                             <xs:attribute name="nameColumnName" type="xs:string" use="required" />
+                                          </xs:complexType>
+                                       </xs:element>
+                                    </xs:sequence>
+                                 </xs:complexType>
+                              </xs:element>
+                           </xs:sequence>
+                           <xs:attribute name="uniqueName" type="xs:string" use="required" />
+                           <xs:attribute name="order" type="xs:nonNegativeInteger" use="required" />
+                           <xs:attribute name="isPartitioned" type="xs:boolean" use="required" />
+                        </xs:complexType>
+                     </xs:element>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+            <xs:element name="Aggregations">
+               <xs:complexType>
+                  <xs:sequence>
+                     <xs:element name="Aggregation" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                           <xs:attribute name="measureName" type="xs:string" use="required" />
+                           <xs:attribute name="hierarchyName" type="xs:string" use="required" />
+                           <xs:attribute name="aggregationFunction" type="AggregationFunction" use="required" />
+                        </xs:complexType>
+                     </xs:element>
+                  </xs:sequence>
+               </xs:complexType>
+            </xs:element>
+         </xs:sequence>
+         <xs:attribute name="cubeUniqueName" type="xs:string" use="required" />
+         <xs:attribute name="isValid" type="xs:boolean" use="required" />
+      </xs:complexType>
+   </xs:element>
+</xs:schema>
